@@ -35,16 +35,8 @@ jobs:
         shell: cmd
         run: |
           curl -L -o VulkanSDK-Installer.exe https://sdk.lunarg.com/sdk/download/%VULKAN_VERSION%/windows/VulkanSDK-%VULKAN_VERSION%-Installer.exe
-          if %errorlevel% neq 0 goto :winget
-          echo Installing Vulkan SDK...
-          start /wait VulkanSDK-Installer.exe /S
-          if %errorlevel% equ 0 goto :end
-
-          :winget
-          echo Manual install failed. Trying Winget...
-          winget.exe install --id "KhronosGroup.VulkanSDK" --version %VULKAN_VERSION% --exact --source winget --accept-source-agreements --disable-interactivity --silent --accept-package-agreements --force
-
-          :end
+          echo Extracting Vulkan SDK...
+          7z x VulkanSDK-Installer.exe -oC:\VulkanSDK\%VULKAN_VERSION% -y
 
       - name: 配置 Vulkan 环境变量
         shell: pwsh
