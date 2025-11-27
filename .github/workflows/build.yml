@@ -25,6 +25,11 @@ jobs:
           path: whisper.cpp
           submodules: recursive
 
+      - name: 移动源代码到短路径
+        shell: pwsh
+        run: |
+          Move-Item -Path "whisper.cpp" -Destination "D:\w"
+
       - name: 缓存 Vulkan SDK
         id: cache-vulkan
         uses: actions/cache@v4
@@ -62,17 +67,21 @@ jobs:
         run: choco install ninja
 
       - name: 配置 CMake
-        run: cmake -S whisper.cpp -B build -G Ninja -DGGML_VULKAN=1 -DCMAKE_BUILD_TYPE=Release -DBUILD_SHARED_LIBS=ON
+        run: cmake -S D:\w -B D:\w\build -G Ninja -DGGML_VULKAN=1 -DCMAKE_BUILD_TYPE=Release -DBUILD_SHARED_LIBS=ON
 
       - name: 构建
-        run: cmake --build build --config Release --parallel 8
+        run: cmake --build D:\w\build --config Release --parallel 8
 
       - name: 复制 DLL 依赖
         shell: pwsh
         run: |
           [Console]::OutputEncoding = [System.Text.Encoding]::UTF8
           # Ninja 构建系统中，输出目录通常直接在 build/bin/ 下，没有 Release 子目录
-          Copy-Item -Path "$env:VULKAN_SDK\Bin\glslc.exe" -Destination "build\bin\"
+          Copy-Item -Path "$env:VULKAN_SDK\Bin\glslc.exe" -Destination "D:\w\build\bin\"
+
+          # 将构建产物复制回工作区以便上传
+          New-Item -ItemType Directory -Force -Path "build\bin"
+          Copy-Item -Path "D:\w\build\bin\*" -Destination "build\bin"
 
       - name: 上传构建产物
         uses: actions/upload-artifact@v4
