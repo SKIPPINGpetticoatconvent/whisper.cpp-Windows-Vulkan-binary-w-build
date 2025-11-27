@@ -32,7 +32,7 @@ jobs:
 
       - name: 安装 Vulkan SDK
         if: steps.cache-vulkan.outputs.cache-hit != 'true'
-        shell: powershell
+        shell: pwsh
         run: |
           [Console]::OutputEncoding = [System.Text.Encoding]::UTF8
           $vulkanVersion = "${{ env.VULKAN_VERSION }}"
@@ -46,7 +46,7 @@ jobs:
           Start-Process -FilePath $vulkanSdkInstaller -ArgumentList "/S" -Wait
 
       - name: 配置 Vulkan 环境变量
-        shell: powershell
+        shell: pwsh
         run: |
           [Console]::OutputEncoding = [System.Text.Encoding]::UTF8
           $vulkanPath = "C:\VulkanSDK\${{ env.VULKAN_VERSION }}"
@@ -73,7 +73,7 @@ jobs:
         run: cmake --build build --config Release --parallel 8
 
       - name: 复制 DLL 依赖
-        shell: powershell
+        shell: pwsh
         run: |
           [Console]::OutputEncoding = [System.Text.Encoding]::UTF8
           # Ninja 构建系统中，输出目录通常直接在 build/bin/ 下，没有 Release 子目录
@@ -89,7 +89,7 @@ jobs:
 
       - name: 压缩发布包
         if: inputs.release_tag != ''
-        shell: powershell
+        shell: pwsh
         run: |
           [Console]::OutputEncoding = [System.Text.Encoding]::UTF8
           Compress-Archive -Path build\bin\* -DestinationPath whisper-windows-vulkan-${{ inputs.release_tag }}.zip
