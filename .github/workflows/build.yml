@@ -62,7 +62,7 @@ jobs:
         run: choco install ninja
 
       - name: 配置 CMake
-        run: cmake -S whisper.cpp -B build -G Ninja -DGGML_VULKAN=ON -DCMAKE_BUILD_TYPE=Release -DBUILD_SHARED_LIBS=ON
+        run: cmake -S whisper.cpp -B build -G Ninja -DGGML_VULKAN=1 -DCMAKE_BUILD_TYPE=Release -DBUILD_SHARED_LIBS=ON
 
       - name: 构建
         run: cmake --build build --config Release --parallel 8
