@@ -63,11 +63,8 @@ jobs:
           echo "$vulkanPath\Lib" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
           echo "$vulkanPath\Include" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
 
-      - name: 安装 Ninja 构建工具
-        run: choco install ninja
-
       - name: 配置 CMake
-        run: cmake -S D:\w -B D:\w\build -G Ninja -DGGML_VULKAN=1 -DCMAKE_BUILD_TYPE=Release -DBUILD_SHARED_LIBS=ON
+        run: cmake -S D:\w -B D:\w\build -G "Visual Studio 17 2022" -A x64 -DGGML_VULKAN=1 -DBUILD_SHARED_LIBS=ON
 
       - name: 构建
         run: cmake --build D:\w\build --config Release --parallel 8
@@ -76,12 +73,14 @@ jobs:
         shell: pwsh
         run: |
           [Console]::OutputEncoding = [System.Text.Encoding]::UTF8
-          # Ninja 构建系统中，输出目录通常直接在 build/bin/ 下，没有 Release 子目录
-          Copy-Item -Path "$env:VULKAN_SDK\Bin\glslc.exe" -Destination "D:\w\build\bin\"
+          # MSVC 构建会将二进制文件放在 bin/Release 目录下
+          $binPath = "D:\w\build\bin\Release"
+
+          Copy-Item -Path "$env:VULKAN_SDK\Bin\glslc.exe" -Destination $binPath
 
           # 将构建产物复制回工作区以便上传
           New-Item -ItemType Directory -Force -Path "build\bin"
-          Copy-Item -Path "D:\w\build\bin\*" -Destination "build\bin"
+          Copy-Item -Path "$binPath\*" -Destination "build\bin"
 
       - name: 上传构建产物
         uses: actions/upload-artifact@v4
