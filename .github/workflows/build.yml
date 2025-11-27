@@ -34,6 +34,7 @@ jobs:
         if: steps.cache-vulkan.outputs.cache-hit != 'true'
         shell: powershell
         run: |
+          [Console]::OutputEncoding = [System.Text.Encoding]::UTF8
           $vulkanVersion = "${{ env.VULKAN_VERSION }}"
           $vulkanSdkUrl = "https://sdk.lunarg.com/sdk/download/$vulkanVersion/windows/VulkanSDK-$vulkanVersion-Installer.exe"
           $vulkanSdkInstaller = "VulkanSDK-Installer.exe"
@@ -47,6 +48,7 @@ jobs:
       - name: 配置 Vulkan 环境变量
         shell: powershell
         run: |
+          [Console]::OutputEncoding = [System.Text.Encoding]::UTF8
           $vulkanPath = "C:\VulkanSDK\${{ env.VULKAN_VERSION }}"
           Write-Host "正在为 $vulkanPath 设置环境变量"
 
@@ -73,6 +75,7 @@ jobs:
       - name: 复制 DLL 依赖
         shell: powershell
         run: |
+          [Console]::OutputEncoding = [System.Text.Encoding]::UTF8
           # Ninja 构建系统中，输出目录通常直接在 build/bin/ 下，没有 Release 子目录
           Copy-Item -Path "$env:VULKAN_SDK\Bin\glslc.exe" -Destination "build\bin\"
 
@@ -88,6 +91,7 @@ jobs:
         if: inputs.release_tag != ''
         shell: powershell
         run: |
+          [Console]::OutputEncoding = [System.Text.Encoding]::UTF8
           Compress-Archive -Path build\bin\* -DestinationPath whisper-windows-vulkan-${{ inputs.release_tag }}.zip
 
       - name: 创建 Release 发布
