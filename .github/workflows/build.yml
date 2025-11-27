@@ -23,11 +23,20 @@ jobs:
         with:
           submodules: recursive
 
+      - name: 缓存 Vulkan SDK
+        id: cache-vulkan
+        uses: actions/cache@v4
+        with:
+          path: C:\VulkanSDK\${{ env.VULKAN_VERSION }}
+          key: vulkan-sdk-${{ env.VULKAN_VERSION }}
+
       - name: 安装 Vulkan SDK
-        shell: pwsh
+        if: steps.cache-vulkan.outputs.cache-hit != 'true'
+        shell: cmd
         run: |
-          [Console]::OutputEncoding = [System.Text.Encoding]::UTF8
-          choco install vulkan-sdk --version ${{ env.VULKAN_VERSION }}
+          curl -L -o VulkanSDK-Installer.exe https://sdk.lunarg.com/sdk/download/%VULKAN_VERSION%/windows/VulkanSDK-%VULKAN_VERSION%-Installer.exe
+          echo Installing Vulkan SDK...
+          start /wait VulkanSDK-Installer.exe /S
 
       - name: 配置 Vulkan 环境变量
         shell: pwsh
