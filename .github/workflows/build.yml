@@ -42,7 +42,7 @@ jobs:
 
           :winget
           echo Manual install failed. Trying Winget...
-          winget install --id KhronosGroup.VulkanSDK --version %VULKAN_VERSION% --exact --source winget --accept-source-agreements --accept-package-agreements --silent --force --disable-interactivity
+          winget.exe install --id "KhronosGroup.VulkanSDK" --version %VULKAN_VERSION% --exact --source winget --accept-source-agreements --disable-interactivity --silent --accept-package-agreements --force
 
           :end
 
